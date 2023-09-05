@@ -1,0 +1,8 @@
+﻿@using DEMO.App.Data;
+@inject IPedidoRepository pedidoRepository;
+
+@{
+    ViewData["Title"] = "Demo App";
+}
+<h1>teste</h1>
+<h1>@pedidoRepository.ObterPedido().Id;</h1>
