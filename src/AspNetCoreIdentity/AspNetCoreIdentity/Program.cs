@@ -1,30 +1,43 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreIdentity.Areas.Identity.Data;
-using Microsoft.AspNetCore.Builder;
 using AspNetCoreIdentity.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using AspNetCoreIdentity.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("AspNetCoreIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'AspNetCoreIdentityContextConnection' not found.");
 
-builder.Services.AddDbContext<AspNetCoreIdentityContext>(options =>
-    options.UseSqlServer(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<AspNetCoreIdentityContext>();
+//IDENTITY E DBCONTEXT CONFIGURATION 
+//builder.Services.AddDbContext<AspNetCoreIdentityContext>(options =>
+//    options.UseSqlServer(connectionString));
+
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<AspNetCoreIdentityContext>();
 
 //AQUI CADASTRAMOS AS POLICY (CLAIMS)
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("PodeExcluir", policy => policy.RequireClaim("PodeExcluir"));
-    options.AddPolicy("PodeLer", policy => policy.Requirements.Add(new PermissaoNecessaria("PodeLer")));
-    options.AddPolicy("PodeEscrever", policy => policy.Requirements.Add(new PermissaoNecessaria("PodeEscrever")));
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("PodeExcluir", policy => policy.RequireClaim("PodeExcluir"));
+//    options.AddPolicy("PodeLer", policy => policy.Requirements.Add(new PermissaoNecessaria("PodeLer")));
+//    options.AddPolicy("PodeEscrever", policy => policy.Requirements.Add(new PermissaoNecessaria("PodeEscrever")));
+//});
+
+//CLASSE RESPONSÁVEL PELO IDENTITY E DBCONTEXT
+builder.Services.AddIdentityConfig(connectionString);
+
+//CLASSE RESPONSÁVEL POR ORGANIZAR O IDENTITY (CLAIMS) DO PROJETO
+builder.Services.AddAuthorizationConfig();
+
+
 
 //INJEÇÃO DO HANDLER CRIADO
-builder.Services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
+//builder.Services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
+
+//CLASSE RESPONSÁVEL POR ORGANIZAR AS DEPÊNDENCIAS DO PROJETO
+builder.Services.ResolveDependencies();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
