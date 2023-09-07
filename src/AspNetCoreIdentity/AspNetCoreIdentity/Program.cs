@@ -1,13 +1,22 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AspNetCoreIdentity.Areas.Identity.Data;
-using AspNetCoreIdentity.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using AspNetCoreIdentity.Config;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("AspNetCoreIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'AspNetCoreIdentityContextConnection' not found.");
 
+//SETANDO OS ARQUIVOS DO APPSETTINGS PARA TODOS OS AMBIENTES
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json",true,true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json",true,true)
+    .AddEnvironmentVariables();
+
+//CASO SEJA O AMBIENTE DE PRODUÇÃO ELE PEGA OS DADOS DA PRÓPRIA MÁQUINA
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+var connectionString = builder.Configuration.GetConnectionString("AspNetCoreIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'AspNetCoreIdentityContextConnection' not found.");
 
 //IDENTITY E DBCONTEXT CONFIGURATION 
 //builder.Services.AddDbContext<AspNetCoreIdentityContext>(options =>
@@ -47,7 +56,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/erro/500");
+    app.UseStatusCodePagesWithRedirects("/erro/{0}");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
