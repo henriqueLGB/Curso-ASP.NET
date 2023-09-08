@@ -1,3 +1,8 @@
+using KissLog;
+using KissLog.AspNetCore;
+using KissLog.CloudListeners.Auth;
+using KissLog.CloudListeners.RequestLogsListener;
+using KissLog.Formatters;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreIdentity.Config;
 
@@ -39,14 +44,11 @@ builder.Services.AddIdentityConfig(connectionString);
 //CLASSE RESPONSÁVEL POR ORGANIZAR O IDENTITY (CLAIMS) DO PROJETO
 builder.Services.AddAuthorizationConfig();
 
-
-
 //INJEÇÃO DO HANDLER CRIADO
 //builder.Services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
 
 //CLASSE RESPONSÁVEL POR ORGANIZAR AS DEPÊNDENCIAS DO PROJETO
 builder.Services.ResolveDependencies();
-
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -77,5 +79,15 @@ app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseKissLogMiddleware(options => {
+    options.Listeners.Add(new RequestLogsApiListener(new Application(
+        builder.Configuration["KissLog.OrganizationId"],    //  "46163ad1-19b3-402e-802e-3457ef288160"
+        builder.Configuration["KissLog.ApplicationId"])     //  "67015c81-7405-4e9e-a74b-3ad0c76e7b17"
+    )
+    {
+        ApiUrl = builder.Configuration["KissLog.ApiUrl"]    //  "https://api.kisslog.net"
+    });
+});
 
 app.Run();

@@ -1,8 +1,8 @@
 ﻿using AspNetCoreIdentity.Extensions;
 using AspNetCoreIdentity.Models;
+using KissLog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace AspNetCoreIdentity.Controllers
 {
@@ -10,7 +10,6 @@ namespace AspNetCoreIdentity.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -19,6 +18,7 @@ namespace AspNetCoreIdentity.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+            _logger.LogInformation("Usuário Acessou a home!");
             return View();
         }
 
@@ -47,7 +47,7 @@ namespace AspNetCoreIdentity.Controllers
         }
 
         //CLAIM CUSTOMIZADO
-        [ClaimsAuthorizeAttribute("Produtos","Ler")]
+        [ClaimsAuthorizeAttribute("Produtos", "Ler")]
         public IActionResult ClaimCustom()
         {
             return View("Secret");
@@ -81,7 +81,7 @@ namespace AspNetCoreIdentity.Controllers
                     return StatusCode(404);
             }
 
-            return View("Error",modelErro);
+            return View("Error", modelErro);
         }
     }
 }
