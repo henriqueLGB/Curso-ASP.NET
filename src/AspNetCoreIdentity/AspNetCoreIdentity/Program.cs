@@ -5,6 +5,7 @@ using KissLog.CloudListeners.RequestLogsListener;
 using KissLog.Formatters;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreIdentity.Config;
+using AspNetCoreIdentity.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,7 @@ builder.Services.AddAuthorizationConfig();
 builder.Services.ResolveDependencies();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => options.Filters.Add(typeof(AuditoriaFilter)));
 
 var app = builder.Build();
 
