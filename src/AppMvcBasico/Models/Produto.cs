@@ -26,6 +26,6 @@ namespace AppMvcBasico.Models
 
         /* EF RELATIONS */
         //No caso como o Fornecedor terá um produto pode chamar normal.
-        public Fornecedor Fornecedor { get; set; }
+        public Fornecedor? Fornecedor { get; set; }
     }
 }
